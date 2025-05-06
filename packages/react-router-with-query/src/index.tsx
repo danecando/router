@@ -9,7 +9,6 @@ import { isRedirect } from '@tanstack/router-core'
 import type { AnyRouter } from '@tanstack/react-router'
 import type {
   QueryClient,
-  QueryObserverResult,
   UseQueryOptions,
 } from '@tanstack/react-query'
 
@@ -37,7 +36,6 @@ export function routerWithQueryClient<TRouter extends AnyRouter>(
   additionalOpts?: AdditionalOptions,
 ): TRouter {
   const seenQueryKeys = new Set<string>()
-  const streamedQueryKeys = new Set<string>()
 
   const ogClientOptions = queryClient.getDefaultOptions()
   queryClient.setDefaultOptions({
@@ -61,8 +59,17 @@ export function routerWithQueryClient<TRouter extends AnyRouter>(
           // That means it's going to get dehydrated with critical
           // data, so we can skip the injection
           if (queryClient.getQueryData(options.queryKey) !== undefined) {
-            ;(options as any).__skipInjection = true
             return
+          }
+          else {
+            router.serverSsr!.streamValue(
+              '__QueryClient__' + hash(options.queryKey),
+              dehydrate(queryClient, {
+                shouldDehydrateMutation: () => false,
+                shouldDehydrateQuery: (query) =>
+                  hash(query.queryKey) === hash(options.queryKey),
+              }),
+            )
           }
         } else {
           // On the client, pick up the deferred data from the stream
@@ -76,37 +83,6 @@ export function routerWithQueryClient<TRouter extends AnyRouter>(
             hydrate(queryClient, dehydratedClient)
           }
         }
-      },
-      _experimental_afterQuery: (
-        options: UseQueryOptions,
-        _result: QueryObserverResult,
-      ) => {
-        // On the server (if we're not skipping injection)
-        // send down the dehydrated query
-        const hash = options.queryKeyHashFn || hashKey
-        if (
-          router.isServer &&
-          !(options as any).__skipInjection &&
-          queryClient.getQueryData(options.queryKey) !== undefined &&
-          !streamedQueryKeys.has(hash(options.queryKey))
-        ) {
-          streamedQueryKeys.add(hash(options.queryKey))
-
-          router.serverSsr!.streamValue(
-            '__QueryClient__' + hash(options.queryKey),
-            dehydrate(queryClient, {
-              shouldDehydrateMutation: () => false,
-              shouldDehydrateQuery: (query) =>
-                hash(query.queryKey) === hash(options.queryKey),
-            }),
-          )
-        }
-
-        // Call the original afterQuery
-        ;(ogClientOptions.queries as any)?._experimental_afterQuery?.(
-          options,
-          _result,
-        )
       },
     } as any,
   })

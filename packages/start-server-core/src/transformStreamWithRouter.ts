@@ -136,10 +136,12 @@ export function transformStreamWithRouter(
 
     promise
       .then((html) => {
-        if (!bodyStarted) {
-          routerStreamBuffer += html
-        } else {
-          finalPassThrough.write(html)
+        if (html) {
+          if (!bodyStarted) {
+            routerStreamBuffer += html
+          } else {
+            finalPassThrough.write(html)
+          }
         }
       })
       .catch(injectedHtmlDonePromise.reject)

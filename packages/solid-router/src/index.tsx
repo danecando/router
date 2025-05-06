@@ -205,7 +205,6 @@ export type {
   RouterConstructorOptions,
   ControllablePromise,
   InjectedHtmlEntry,
-  RouterErrorSerializer,
   SerializerExtensions,
   CreateFileRoute,
 } from '@tanstack/router-core'

@@ -84,16 +84,16 @@ export function redirect<
   return response as Redirect<TRouter, TFrom, TTo, TMaskFrom, TMaskTo>
 }
 
-export function isRedirect(obj: any): obj is AnyRedirect {
+export function isRedirect(obj: unknown): obj is AnyRedirect {
   return obj instanceof Response && !!(obj as any).options
 }
 
-export function isResolvedRedirect(obj: any): obj is AnyRedirect {
-  return isRedirect(obj) && !!obj.options.href
+export function isResolvedRedirect(obj: unknown): obj is AnyRedirect {
+  return isRedirect(obj) && !!obj?.options?.href
 }
 
-export function parseRedirect(obj: any) {
-  if (typeof obj === 'object' && obj.isSerializedRedirect) {
+export function parseRedirect(obj: unknown) {
+  if (obj && typeof obj === 'object' && (obj as any).isSerializedRedirect) {
     return redirect(obj)
   }
 

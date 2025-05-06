@@ -227,7 +227,6 @@ export type {
   ControllablePromise,
   InjectedHtmlEntry,
   RouterOptions,
-  RouterErrorSerializer,
   RouterState,
   ListenerFn,
   BuildNextOptions,
