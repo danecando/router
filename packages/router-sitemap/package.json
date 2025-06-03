@@ -60,7 +60,8 @@
     "node": ">=12"
   },
   "dependencies": {
-    "@tanstack/router-core": "workspace:^"
+    "@tanstack/router-core": "workspace:^",
+    "sitemap": "^8.0.0"
   },
   "devDependencies": {
     "typescript": "^5.7.2",
