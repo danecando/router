@@ -2,9 +2,7 @@ import { createAPIFileRoute } from '@tanstack/react-start/api'
 import { generateSitemap } from '@tanstack/router-sitemap'
 
 export const APIRoute = createAPIFileRoute('/api/sitemap')({
-  GET: async ({ request, params }) => {
-    console.info(`Generating sitemap... @`, request.url)
-
+  GET: async ({ request }) => {
     const sitemap = await generateSitemap({
       siteUrl: 'https://example.com',
       routes: {
